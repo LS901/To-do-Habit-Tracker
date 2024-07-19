@@ -5,7 +5,7 @@ import TaskListComponent from "./components/TaskListComponent.jsx";
 import RightSide from "./components/RightSide/RightSide.jsx";
 import { DateContext } from './contexts/DateContext.jsx'
 function App() {
-  const [date, setDate] = useState(new Date());
+  const [date, setDate] = useState('.');
   const setCurrentDate = (date) => {
       setDate(date);
   }

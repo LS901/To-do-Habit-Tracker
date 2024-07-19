@@ -1,45 +1,43 @@
-import React, {useContext, useState} from "react";
+import React, { useContext, useState } from "react";
 import DatePicker from "react-datepicker";
 import * as Dialog from '@radix-ui/react-dialog';
 import { Cross2Icon } from '@radix-ui/react-icons';
 import './styles.css';
 import "react-datepicker/dist/react-datepicker.css";
 import SelectComponent from "../Select/SelectComponent.jsx";
-import {convertDate, getHabits, getAllHabits} from "../../helpers/helpers.jsx";
-import {DateContext} from "../../contexts/DateContext.jsx";
+import { convertDate, getHabits, getAllHabits } from "../../helpers/helpers.jsx";
+import { DateContext } from "../../contexts/DateContext.jsx";
 import { motion } from 'framer-motion';
-const AddHabit = ({buttonName='Add Habit'}) => {
+
+const AddHabit = ({ buttonName = 'Add Habit' }) => {
     const selectedDate = useContext(DateContext);
     const [startDate, setStartDate] = useState(selectedDate);
     const [name, setName] = useState('');
     const [freq, setFreq] = useState('daily');
     const [occur, setOccur] = useState(1);
-    const handleOccurChange = (event) => {
-        setOccur(event.target.value);
-    }
-    const handleNameChange = (event) => {
-        setName(event.target.value);
-    };
-    const handleFreqChange = (event) => {
-        setFreq(event)
-    }
+
+    const handleChange = (setter) => (event) => setter(event.target.value);
+
     const habitValidation = (habitList, newHabit) => {
-        let result = { result: true, reason: undefined }
-        !!habitList && habitList.map((x) =>{ if((x.date === newHabit.date) && (x.name === newHabit.name)) {
-            result = { result: false, reason: 'Duplicate habit.' }}})
         if (!newHabit.name) {
-            result = { result: false, reason: 'No habit name provided.' }
-        } else if (newHabit.occurrence < 1) {
-            result = { result: false, reason: 'Please enter a number from 1 upwards for the how many times field.' }
-        } else if (!newHabit.freq) {
-            result = { result: false, reason: 'Please enter if this habit is either Daily or Weekly.' }
+            return { result: false, reason: 'No habit name provided.' };
         }
-        return result;
-    }
+        if (newHabit.occurrence < 1) {
+            return { result: false, reason: 'Please enter a number from 1 upwards for the how many times field.' };
+        }
+        if (!newHabit.freq) {
+            return { result: false, reason: 'Please enter if this habit is either Daily or Weekly.' };
+        }
+        const isDuplicate = habitList?.some(habit => habit.date === newHabit.date && habit.name === newHabit.name);
+        if (isDuplicate) {
+            return { result: false, reason: 'Duplicate habit.' };
+        }
+        return { result: true, reason: undefined };
+    };
 
     const saveChanges = () => {
         const formattedDate = convertDate(startDate);
-        const formattedHabitInfo = {
+        const newHabit = {
             date: formattedDate,
             name,
             freq,
@@ -47,37 +45,37 @@ const AddHabit = ({buttonName='Add Habit'}) => {
             timesCompleted: 0,
             dateCreated: new Date(),
             totalExpected: occur
-        }
-        const currentHabitList = getHabits();
-        const allHabitList = getAllHabits();
-        const isValidHabit = habitValidation(currentHabitList,formattedHabitInfo)
-        if(!!isValidHabit.result) {
-            const newHabitList = !!currentHabitList ? [
-                ...currentHabitList,
-                formattedHabitInfo,
-            ] : [formattedHabitInfo]
-            localStorage.setItem('habits', JSON.stringify(newHabitList))
-            localStorage.setItem('allHabits', JSON.stringify(!!allHabitList ? [...allHabitList, formattedHabitInfo] : [formattedHabitInfo]))
+        };
+        const currentHabits = getHabits();
+        const allHabits = getAllHabits();
+        const validation = habitValidation(currentHabits, newHabit);
+
+        if (validation.result) {
+            const updatedCurrentHabits = currentHabits ? [...currentHabits, newHabit] : [newHabit];
+            const updatedAllHabits = allHabits ? [...allHabits, newHabit] : [newHabit];
+            localStorage.setItem('habits', JSON.stringify(updatedCurrentHabits));
+            localStorage.setItem('allHabits', JSON.stringify(updatedAllHabits));
             window.dispatchEvent(new Event('storage'));
             resetFields();
         } else {
-            window.alert(isValidHabit.reason);
+            window.alert(validation.reason);
         }
-    }
+    };
 
     const resetFields = () => {
         setName('');
-        setFreq(undefined);
+        setFreq('daily');
         setStartDate(new Date());
         setOccur(1);
-    }
+    };
 
-    return(
+    return (
         <Dialog.Root>
             <Dialog.Trigger asChild>
                 <motion.button className="!cursor-pointer TaskButton !text-[#ba9ffb] px-2 !bg-transparent m-4 hover:!bg-[#ba9ffb] hover:!text-black"
                                whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-                    {buttonName}</motion.button>
+                    {buttonName}
+                </motion.button>
             </Dialog.Trigger>
             <Dialog.Portal>
                 <Dialog.Overlay className="DialogOverlay" />
@@ -87,32 +85,24 @@ const AddHabit = ({buttonName='Add Habit'}) => {
                         Add a new habit here. Habits are not fixed to a specific date. Just pick a start date and the frequency and you're good to go!
                     </Dialog.Description>
                     <fieldset className="Fieldset">
-                        <label className="Label" htmlFor="Habit">
-                            Habit
-                        </label>
-                        <input className="Input" id="habit" type='text' value={name} onChange={handleNameChange}/>
+                        <label className="Label" htmlFor="habit">Habit</label>
+                        <input className="Input" id="habit" type="text" value={name} onChange={handleChange(setName)} />
                     </fieldset>
                     <fieldset className="Fieldset">
-                        <label className="Label" htmlFor="Date">
-                            Start From
-                        </label>
-                        <DatePicker selected={startDate} onChange={(date) => setStartDate(date)}/>
+                        <label className="Label" htmlFor="date">Start From</label>
+                        <DatePicker selected={startDate} onChange={setStartDate} />
                     </fieldset>
                     <fieldset className="Fieldset">
-                        <label className="Label" htmlFor="Task">
-                            Daily or Weekly?
-                        </label>
-                        <SelectComponent value={freq} change={handleFreqChange} type="habit"/>
+                        <label className="Label" htmlFor="freq">Daily or Weekly?</label>
+                        <SelectComponent value={freq} change={setFreq} type="habit" />
                     </fieldset>
                     <fieldset className="Fieldset">
-                        <label className="Label" htmlFor="Occurrence">
-                            How many times per day/week?
-                        </label>
-                        <input className="Input" id="occurrence" type='text' value={occur} onChange={handleOccurChange}/>
+                        <label className="Label" htmlFor="occur">How many times per day/week?</label>
+                        <input className="Input" id="occur" type="text" value={occur} onChange={handleChange(setOccur)} />
                     </fieldset>
                     <div style={{ display: 'flex', marginTop: 25, justifyContent: 'flex-end' }}>
                         <Dialog.Close asChild>
-                            <button className="Button green" onClick={() => saveChanges()}>Save changes</button>
+                            <button className="Button green" onClick={saveChanges}>Save changes</button>
                         </Dialog.Close>
                     </div>
                     <Dialog.Close asChild>
@@ -124,6 +114,6 @@ const AddHabit = ({buttonName='Add Habit'}) => {
             </Dialog.Portal>
         </Dialog.Root>
     );
-}
+};
 
 export default AddHabit;
