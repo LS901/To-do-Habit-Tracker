@@ -1,0 +1,34 @@
+.react-calendar {
+    background: lightgrey;
+    font-weight: bold;
+    font-family: "Raleway", sans-serif;
+}
+
+.react-calendar__navigation {
+    text-align: center
+}
+
+.highlight {
+    border-radius:10%;
+    background: lightblue !important;
+    text-align:center;
+}
+
+.react-calendar__tile--active {
+    color: black;
+    border-radius:10%;
+    background: #5e43f3 !important;
+}
+
+.react-calendar__tile--now{
+    background: none;
+}
+
+.react-calendar button:enabled:hover {
+    background: #ba9ffb;
+}
+
+.react-calendar__month-view__days__day--weekend {
+    color: black;
+}
+
