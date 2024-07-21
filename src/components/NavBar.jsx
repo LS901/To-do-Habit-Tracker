@@ -23,7 +23,7 @@ const NavBar = () => {
                 <h1 className='px-3 text-gray-300 text-2xl'>My List</h1>
             </div>
             <div className='flex items-center mx-auto'>
-                <img className='w-16 h-16' src='public/tick2.png' alt='Tick icon' />
+                <img className='w-16 h-16' src='/public/tick2.png' alt='Tick icon' />
             </div>
             <motion.div
                 className='task-manager flex flex-row items-center'
