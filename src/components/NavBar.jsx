@@ -4,7 +4,7 @@ import HabitManager from "./HabitManager.jsx";
 
 const NavBar = () => {
     return (
-        <div className='sidebar-wrapper h-[100%] border-r-2 p-6 rounded-lg flex flex-row bg-gradient-to-r from-gray-600 to-gray-800'>
+        <div className='sidebar-wrapper h-[100%] justify-between border-r-2 p-6 rounded-lg flex flex-row bg-gradient-to-r from-gray-600 to-gray-800'>
             <div className='flex flex-row items-center'>
                 <div className='flex flex-col justify-center'>
                     <div className='flex-row flex'>
