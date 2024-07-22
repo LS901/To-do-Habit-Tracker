@@ -10,8 +10,7 @@ import { DateContext } from "../../contexts/DateContext.jsx";
 import { motion } from 'framer-motion';
 
 const AddHabit = ({ buttonName = 'Add Habit' }) => {
-    const selectedDate = useContext(DateContext);
-    const [startDate, setStartDate] = useState(selectedDate);
+    const [startDate, setStartDate] = useState(new Date());
     const [name, setName] = useState('');
     const [freq, setFreq] = useState('daily');
     const [occur, setOccur] = useState(1);
