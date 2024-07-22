@@ -4,8 +4,9 @@ import './index.css'
 import TaskListComponent from "./components/TaskListComponent.jsx";
 import RightSide from "./components/RightSide/RightSide.jsx";
 import { DateContext } from './contexts/DateContext.jsx'
+import {convertDate} from "./helpers/helpers.jsx";
 function App() {
-  const [date, setDate] = useState('.');
+  const [date, setDate] = useState(convertDate(new Date()));
   const setCurrentDate = (date) => {
       setDate(date);
   }
